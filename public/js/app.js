@@ -1896,7 +1896,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./router */ "./resources/js/router.js");
-/* harmony import */ var _components_App__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/App */ "./resources/js/components/App.vue");
+/* harmony import */ var _components_App_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/App.vue */ "./resources/js/components/App.vue");
 
 
 
@@ -1922,7 +1922,7 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 var app = new vue__WEBPACK_IMPORTED_MODULE_2__.default({
   el: '#app',
   components: {
-    App: _components_App__WEBPACK_IMPORTED_MODULE_1__.default
+    App: _components_App_vue__WEBPACK_IMPORTED_MODULE_1__.default
   },
   router: _router__WEBPACK_IMPORTED_MODULE_0__.default
 });
@@ -1986,7 +1986,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
-/* harmony import */ var _views_Start__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./views/Start */ "./resources/js/views/Start.vue");
+/* harmony import */ var _views_Start_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./views/Start.vue */ "./resources/js/views/Start.vue");
 
 
 
@@ -1996,7 +1996,7 @@ vue__WEBPACK_IMPORTED_MODULE_1__.default.use(vue_router__WEBPACK_IMPORTED_MODULE
   routes: [{
     path: '/',
     name: 'home',
-    component: _views_Start__WEBPACK_IMPORTED_MODULE_0__.default
+    component: _views_Start_vue__WEBPACK_IMPORTED_MODULE_0__.default
   }]
 }));
 
