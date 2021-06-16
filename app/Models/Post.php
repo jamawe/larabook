@@ -11,4 +11,9 @@ class Post extends Model
 
     // Disable mass assignment protection
     protected $guarded = [];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
