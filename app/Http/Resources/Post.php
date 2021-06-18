@@ -18,7 +18,7 @@ class Post extends JsonResource
         return [
             'data' => [
                 'type' => 'posts',
-                'post_id' => $this->id, // Note that model properties can be accessed through $this
+                'post_id' => $this->id, // Model properties can be accessed through $this
                 'attributes' => [
                     'posted_by' => new UserResource($this->user),
                     'body' => $this->body,
