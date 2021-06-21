@@ -1,10 +1,17 @@
 <template>
 
-  <div class="felx flex-col flex-1 h-screen overflow-y-hidden">
+  <div class="flex flex-col flex-1 h-screen overflow-y-hidden">
     
     <Nav />
 
-    <router-view></router-view>
+    <div class="flex flex-1 overflow-y-hidden">
+
+        <Sidebar />
+
+      <div class="overflow-x-hidden w-2/3">
+        <router-view></router-view>
+      </div>
+    </div>
 
   </div>
 
@@ -12,11 +19,13 @@
 
 <script>
   import Nav from './Nav.vue';
+  import Sidebar     from './Sidebar.vue';
 
   export default {
     name: 'App',
     components: {
       Nav,
+      Sidebar
     }
   }
 
