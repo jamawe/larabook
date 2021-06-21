@@ -1,6 +1,8 @@
 <template>
 
-  <div>Start
+  <div class="felx flex-col flex-1 h-screen overflow-y-hidden">
+    
+    <Nav />
 
     <router-view></router-view>
 
@@ -9,10 +11,14 @@
 </template>
 
 <script>
+  import Nav from './Nav.vue';
 
-export default {
-  name: 'App'
-}
+  export default {
+    name: 'App',
+    components: {
+      Nav,
+    }
+  }
 
 </script>
 
