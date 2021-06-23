@@ -3,7 +3,10 @@
 
     <NewPost />
 
+    <p v-if="loading">Loading posts...</p>
+
     <Post
+      v-else
       v-for="post in posts.data"
       :key="post.data.post_id"
       :post="post"
@@ -28,6 +31,7 @@
     data() {
       return {
         posts: null,
+        loading: true
       }
     },
 
@@ -35,9 +39,11 @@
       axios.get('/api/posts')
         .then(res => {
           this.posts = res.data;
+          this.loading = false;
         })
         .catch(err => {
           console.log('Unable to fetch posts.');
+          this.loading = false;
         });
     }
   }
