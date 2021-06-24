@@ -13,7 +13,9 @@
     data() {
       return {
         user: null,
-        loading: true,
+        posts: null,
+        userLoading: true,
+        postLoading: true,
       }
     },
 
@@ -26,17 +28,18 @@
           console.log('Unable to fetch user from server.');
         })
         .finally(() => {
-          this.loading = false;
+          this.userLoading = false;
         });
 
-        axios.get('/api/posts/' + this.$route.params.userId)
+        axios.get('/api/users/' + this.$route.params.userId + '/posts')
         .then(res => {
           this.posts = res.data;
-          this.loading = false;
         })
         .catch(err => {
           console.log('Unable to fetch user\'s posts.');
-          this.loading = false;
+        })
+        .finally(() => {
+          this.postLoading = false;
         });
     }
 

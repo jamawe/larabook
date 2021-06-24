@@ -2161,7 +2161,9 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       user: null,
-      loading: true
+      posts: null,
+      userLoading: true,
+      postLoading: true
     };
   },
   mounted: function mounted() {
@@ -2172,14 +2174,14 @@ __webpack_require__.r(__webpack_exports__);
     })["catch"](function (err) {
       console.log('Unable to fetch user from server.');
     })["finally"](function () {
-      _this.loading = false;
+      _this.userLoading = false;
     });
-    axios.get('/api/posts/' + this.$route.params.userId).then(function (res) {
+    axios.get('/api/users/' + this.$route.params.userId + '/posts').then(function (res) {
       _this.posts = res.data;
-      _this.loading = false;
     })["catch"](function (err) {
       console.log('Unable to fetch user\'s posts.');
-      _this.loading = false;
+    })["finally"](function () {
+      _this.postLoading = false;
     });
   }
 });
