@@ -2154,6 +2154,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Show',
   data: function data() {
@@ -2170,6 +2172,13 @@ __webpack_require__.r(__webpack_exports__);
     })["catch"](function (err) {
       console.log('Unable to fetch user from server.');
     })["finally"](function () {
+      _this.loading = false;
+    });
+    axios.get('/api/posts/' + this.$route.params.userId).then(function (res) {
+      _this.posts = res.data;
+      _this.loading = false;
+    })["catch"](function (err) {
+      console.log('Unable to fetch user\'s posts.');
       _this.loading = false;
     });
   }
@@ -38795,9 +38804,27 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div")
+  return _vm._m(0)
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "w-100 h-64 overflow-hidden" }, [
+        _c("img", {
+          staticClass: "object-cover w-full",
+          attrs: {
+            src:
+              "https://images.unsplash.com/photo-1624455375091-9746420d4809?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+            alt: "User background image"
+          }
+        })
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
