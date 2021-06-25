@@ -29,8 +29,19 @@
       Sidebar
     },
 
+    created() {
+      this.$store.dispatch('setPageTitle', this.$route.meta.title);
+      // since to/from not available on inital page load get meta.title from route object
+    },
+
     mounted() {
-      this.$store.dispatch('fetchAuthUser');
+      this.$store.dispatch('fetchAuthUser'); // call the action in user.js
+    },
+
+    watch: {
+      $route(to, from) {
+        this.$store.dispatch('setPageTitle', to.meta.title); // call action in title.js
+      }
     }
   }
 
