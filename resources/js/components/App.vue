@@ -23,9 +23,14 @@
 
   export default {
     name: 'App',
+
     components: {
       Nav,
       Sidebar
+    },
+
+    mounted() {
+      this.$store.dispatch('fetchAuthUser');
     }
   }
 
