@@ -2424,7 +2424,7 @@ var actions = {
 };
 var mutations = {
   setTitle: function setTitle(state, title) {
-    state.title = title + ' | Facebook';
+    state.title = title + ' | Larabook';
     document.title = state.title;
   }
 };
