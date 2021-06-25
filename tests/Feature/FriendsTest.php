@@ -71,8 +71,6 @@ class FriendsTest extends TestCase
     /** @test */
     public function friend_request_can_be_accepted()
     {
-        $this->withoutExceptionHandling();
-
         $this->actingAs($user = User::factory()->create(), 'api');
         $anotherUser = User::factory()->create();
 
@@ -105,6 +103,63 @@ class FriendsTest extends TestCase
             ],
             'links' => [
                 'self' => url('/users/'.$anotherUser->id),
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function only_valid_friend_requests_can_be_accepted()
+    {
+        // $this->withoutExceptionHandling();
+
+        $anotherUser = User::factory()->create();
+
+        $response = $this->actingAs($anotherUser, 'api')
+            ->post('/api/friend-request-response', [
+                'user_id' => 123, // There cannot be a request sending user with id 123
+                'status' => 1,
+            ])->assertStatus(404);
+                
+        // There should not be an entry for a friend request
+        $this->assertNull(Friend::first());
+
+        $response->assertJson([
+            'errors' => [
+                'code' => 404,
+                'title' => 'Friend Request Not Found',
+                'detail'=> 'Unable to locate the friend request with the given information.'
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function only_the_recipient_can_accept_a_friend_request()
+    {
+        $this->actingAs($user = User::factory()->create(), 'api');
+        $anotherUser = User::factory()->create();
+
+        // No saving in response needed since test above already passed
+        // Request must still be made so anotherUser can accept it
+        $this->post('/api/friend-request', [
+            'friend_id' => $anotherUser->id,
+        ])->assertStatus(200);
+
+        $response = $this->actingAs(User::factory()->create(), 'api')
+            ->post('/api/friend-request-response', [
+                'user_id' => $user->id, // the auth user id of the one who makes the attempt to accept the friend request doesn't match the one who sent it
+                'status' => 1,
+            ])->assertStatus(404);
+
+        // Make sure that the legit friend request which has been made is not affected
+        $friendRequest = Friend::first();
+        $this->assertNull($friendRequest->confirmed_at);
+        $this->assertNull($friendRequest->status);
+
+        $response->assertJson([
+            'errors' => [
+                'code' => 404,
+                'title' => 'Friend Request Not Found',
+                'detail'=> 'Unable to locate the friend request with the given information.'
             ]
         ]);
     }
