@@ -193,4 +193,64 @@ class FriendsTest extends TestCase
         $this->assertArrayHasKey('status', $responseString['errors']['meta']);
     }
 
+    /** @test */
+    public function a_friendship_is_retrieved_when_fetching_the_profile()
+    {
+        $this->actingAs($user = User::factory()->create(), 'api');
+        $anotherUser = User::factory()->create();
+        $friendRequest = Friend::create([
+            'user_id' => $user->id,
+            'friend_id' => $anotherUser->id,
+            'confirmed_at' => now()->subDay(),
+            'status' => 1,
+        ]);
+
+        $this->get('/api/users/'.$anotherUser->id)
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'attributes' => [
+                        'friendship' => [
+                            'data' => [
+                                'friend_request_id' => $friendRequest->id,
+                                'attributes' => [
+                                    'confirmed_at' => '1 day ago',
+                                ]
+                            ]
+                        ],
+                    ]
+                ],
+            ]);
+    }
+
+    /** @test */
+    public function an_inverse_friendship_is_retrieved_when_fetching_the_profile()
+    {
+        $this->actingAs($user = User::factory()->create(), 'api');
+        $anotherUser = User::factory()->create();
+        $friendRequest = Friend::create([
+            'friend_id' => $user->id,
+            'user_id' => $anotherUser->id,
+            'confirmed_at' => now()->subDay(),
+            'status' => 1,
+        ]);
+
+        $this->get('/api/users/'.$anotherUser->id)
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'attributes' => [
+                        'friendship' => [
+                            'data' => [
+                                'friend_request_id' => $friendRequest->id,
+                                'attributes' => [
+                                    'confirmed_at' => '1 day ago',
+                                ]
+                            ]
+                        ],
+                    ]
+                ],
+            ]);
+    }
+
 }
