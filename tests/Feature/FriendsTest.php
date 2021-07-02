@@ -179,4 +179,18 @@ class FriendsTest extends TestCase
         // dd($response->getContent());
     }
 
+    /** @test */
+    public function a_user_id_and_status_is_required_for_friend_request_responses()
+    {
+        $response = $this->actingAs($user = User::factory()->create(), 'api')
+            ->post('/api/friend-request-response', [
+                'user_id' => '',
+                'status' => '',
+            ])->assertStatus(422); // Unprocessable Entity
+
+        $responseString = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('user_id', $responseString['errors']['meta']);
+        $this->assertArrayHasKey('status', $responseString['errors']['meta']);
+    }
+
 }
