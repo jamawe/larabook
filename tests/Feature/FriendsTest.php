@@ -69,7 +69,7 @@ class FriendsTest extends TestCase
     }
 
     /** @test */
-    public function friend_request_can_be_accepted()
+    public function friend_requests_can_be_accepted()
     {
         $this->actingAs($user = User::factory()->create(), 'api');
         $anotherUser = User::factory()->create();
@@ -162,6 +162,21 @@ class FriendsTest extends TestCase
                 'detail'=> 'Unable to locate the friend request with the given information.'
             ]
         ]);
+    }
+
+    /** @test */
+    public function a_friend_id_is_required_for_friend_requests()
+    {
+        $response = $this->actingAs($user = User::factory()->create(), 'api')
+            ->post('/api/friend-request', [
+                'friend_id' => '',
+            ]); // Unprocessable Entity
+
+        $responseString = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('friend_id', $responseString['errors']['meta']);
+        // dd($responseString);
+
+        // dd($response->getContent());
     }
 
 }

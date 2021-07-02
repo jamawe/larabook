@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\UserNotFoundException;
+use App\Exceptions\ValidationErrorException;
 use App\Models\User;
 use App\Models\Friend;
 use App\Http\Resources\Friend as FriendResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 use function PHPUnit\Framework\throwException;
 
@@ -15,7 +17,7 @@ class FriendRequestController extends Controller
     public function store()
     {
         $data = request()->validate([
-            'friend_id' => '',
+            'friend_id' => 'required',
         ]);
 
         // Find user that should get friend request (user with id of friend_id)
