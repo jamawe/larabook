@@ -12,6 +12,15 @@
 
         <p class="text-2xl text-gray-100 ml-4">{{ user.data.attributes.name }}</p>
       </div>
+
+      <div class="absolute flex items-center bottom-0 right-0 mb-4 mr-12 z-20">
+        <button
+          v-if="friendButtonText" 
+          class="py-1 px-3 bg-gray-200 rounded"
+          @click="$store.dispatch('sendFriendRequest', $route.params.userId)">
+            {{ friendButtonText }}
+          </button>
+      </div>
     </div>
 
     <p v-if="postLoading">Loading posts...</p>
@@ -29,6 +38,7 @@
 
 <script>
   import Post from '../../components/Post.vue';
+  import { mapGetters } from 'vuex';
 
   export default {
     name: 'Show',
@@ -39,36 +49,32 @@
     
     data() {
       return {
-        user: null,
         posts: null,
-        userLoading: true,
         postLoading: true,
       }
     },
 
     mounted() {
-      axios.get('/api/users/' + this.$route.params.userId)
-        .then(res => {
-          this.user = res.data;
-        })
-        .catch(err => {
-          console.log('Unable to fetch user from server.');
-        })
-        .finally(() => {
-          this.userLoading = false;
-        });
+      this.$store.dispatch('fetchUser', this.$route.params.userId); // Get userId via route param
 
-        axios.get('/api/users/' + this.$route.params.userId + '/posts')
-        .then(res => {
-          this.posts = res.data;
-        })
-        .catch(err => {
-          console.log('Unable to fetch user\'s posts.');
-        })
-        .finally(() => {
-          this.postLoading = false;
-        });
-    }
+      axios.get('/api/users/' + this.$route.params.userId + '/posts')
+      .then(res => {
+        this.posts = res.data;
+      })
+      .catch(err => {
+        console.log('Unable to fetch user\'s posts.');
+      })
+      .finally(() => {
+        this.postLoading = false;
+      });
+    },
+
+    computed: {
+      ...mapGetters({
+        user: 'user',
+        friendButtonText: 'friendButtonText',
+      })
+    },
 
   }
 </script>

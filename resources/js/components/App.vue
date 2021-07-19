@@ -9,7 +9,7 @@
         <Sidebar />
 
       <div class="overflow-x-hidden w-2/3">
-        <router-view></router-view>
+        <router-view :key="$route.fullPath"></router-view>
       </div>
     </div>
 
@@ -41,8 +41,10 @@
     watch: {
       $route(to, from) {
         this.$store.dispatch('setPageTitle', to.meta.title); // call action in title.js
+        console.log('Route changed from ' + from.path + ' to ' + to.path);
       }
     }
+
   }
 
 </script>
