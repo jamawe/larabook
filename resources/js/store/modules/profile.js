@@ -1,7 +1,6 @@
 const state = {
   user: null,
   userStatus: null,
-  friendButtonText: null,
 };
 
 const getters = {
@@ -11,8 +10,14 @@ const getters = {
   friendship: state => {
     return state.user.data.attributes.friendship; 
   },
-  friendButtonText: state => {
-    return state.friendButtonText;
+  friendButtonText: (state, getters, rootState) => { // rootState: state of other vuex stores
+    // No friendship yet, so friend request can be sent
+    if (getters.friendship === null) {
+      return 'Add Friend';
+    } // Friend request hasn't been accepted yet
+      else if (getters.friendship.data.attributes.confirmed_at === null) {
+      return 'Pending Friend Request';
+    }
   }
 };
 
@@ -25,7 +30,6 @@ const actions = {
       .then(res => {
         commit('setUser', res.data);
         commit('setUserStatus', 'succes'); // If successful request change user status
-        dispatch('setFriendButton');
       })
       .catch(err => {
         commit('setUserStatus', 'error'); // If failing request change user status to error
@@ -39,28 +43,21 @@ const actions = {
 
     axios.post('/api/friend-request', { 'friend_id': friendId })
       .then(res => {
-        commit('setButtonText', 'Pending Friend Request');
+        commit('setUserFriendship', res.data);
       })
       .catch(error => {
-        commit('setButtonText', 'Add Friend');
       });
 
   },
 
-  setFriendButton({commit, getters}) {
-    // No friendship yet, so friend request can be sent
-    if (getters.friendship === null) {
-      commit('setButtonText', 'Add Friend');
-    } // Friend request hasn't been accepted yet
-      else if (getters.friendship.data.attributes.confirmed_at === null) {
-      commit('setButtonText', 'Pending Friend Request');
-    }
-  }
 };
 
 const mutations = {
   setUser(state, user) { // with user being the requested data
     state.user = user;
+  },
+  setUserFriendship(state, friendship) { // with user being the requested data
+    state.user.data.attributes.friendship = friendship;
   },
   setUserStatus(state, status) {
     state.userStatus = status;

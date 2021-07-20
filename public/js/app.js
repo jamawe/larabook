@@ -2428,8 +2428,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var state = {
   user: null,
-  userStatus: null,
-  friendButtonText: null
+  userStatus: null
 };
 var getters = {
   user: function user(state) {
@@ -2438,8 +2437,15 @@ var getters = {
   friendship: function friendship(state) {
     return state.user.data.attributes.friendship;
   },
-  friendButtonText: function friendButtonText(state) {
-    return state.friendButtonText;
+  friendButtonText: function friendButtonText(state, getters, rootState) {
+    // rootState: state of other vuex stores
+    // No friendship yet, so friend request can be sent
+    if (getters.friendship === null) {
+      return 'Add Friend';
+    } // Friend request hasn't been accepted yet
+    else if (getters.friendship.data.attributes.confirmed_at === null) {
+        return 'Pending Friend Request';
+      }
   }
 };
 var actions = {
@@ -2452,8 +2458,6 @@ var actions = {
     .then(function (res) {
       commit('setUser', res.data);
       commit('setUserStatus', 'succes'); // If successful request change user status
-
-      dispatch('setFriendButton');
     })["catch"](function (err) {
       commit('setUserStatus', 'error'); // If failing request change user status to error
     });
@@ -2465,28 +2469,18 @@ var actions = {
     axios.post('/api/friend-request', {
       'friend_id': friendId
     }).then(function (res) {
-      commit('setButtonText', 'Pending Friend Request');
-    })["catch"](function (error) {
-      commit('setButtonText', 'Add Friend');
-    });
-  },
-  setFriendButton: function setFriendButton(_ref3) {
-    var commit = _ref3.commit,
-        getters = _ref3.getters;
-
-    // No friendship yet, so friend request can be sent
-    if (getters.friendship === null) {
-      commit('setButtonText', 'Add Friend');
-    } // Friend request hasn't been accepted yet
-    else if (getters.friendship.data.attributes.confirmed_at === null) {
-        commit('setButtonText', 'Pending Friend Request');
-      }
+      commit('setUserFriendship', res.data);
+    })["catch"](function (error) {});
   }
 };
 var mutations = {
   setUser: function setUser(state, user) {
     // with user being the requested data
     state.user = user;
+  },
+  setUserFriendship: function setUserFriendship(state, friendship) {
+    // with user being the requested data
+    state.user.data.attributes.friendship = friendship;
   },
   setUserStatus: function setUserStatus(state, status) {
     state.userStatus = status;
