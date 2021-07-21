@@ -1,11 +1,22 @@
 const state = {
   user: null,
   userStatus: null,
+  posts: null,
+  postsStatus: null,
 };
 
 const getters = {
   user: state => {
     return state.user;
+  },
+  posts: state => {
+    return state.posts;
+  },
+  status: state => {
+    return {
+      user: state.userStatus,
+      posts: state.postsStatus,
+    }
   },
   friendship: state => {
     return state.user.data.attributes.friendship; 
@@ -41,6 +52,22 @@ const actions = {
       });
 
   },
+
+  fetchUserPosts({commit, dispatch}, userId) {
+
+    commit('setPostsStatus', 'loading'); // Set user status to loading at beginning
+
+    axios.get('/api/users/' + userId + '/posts')
+    .then(res => {
+      commit('setPosts', res.data);
+      commit('setPostsStatus', 'success');
+    })
+    .catch(err => {
+      commit('setPostsStatus', 'error');
+    });
+
+  },
+
 
   sendFriendRequest({commit, state}, friendId) {
 
@@ -81,11 +108,17 @@ const mutations = {
   setUser(state, user) { // with user being the requested data
     state.user = user;
   },
+  setPosts(state, posts) { // with user being the requested data
+    state.posts = posts;
+  },
   setUserFriendship(state, friendship) { // with user being the requested data
     state.user.data.attributes.friendship = friendship; // TODO - 37-39
   },
   setUserStatus(state, status) {
     state.userStatus = status;
+  },
+  setPostsStatus(state, status) {
+    state.postsStatus = status;
   },
 };
 
