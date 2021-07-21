@@ -25,7 +25,7 @@ class FriendsTest extends TestCase
         ])->assertStatus(200);
 
         // Is there in fact a record of a request?
-        $friendRequest = \App\Models\Friend::first();
+        $friendRequest = Friend::first();
 
         $this->assertNotNull($friendRequest);
 
@@ -45,6 +45,29 @@ class FriendsTest extends TestCase
                 'self' => url('/users/'.$anotherUser->id),
             ]
         ]);
+    }
+
+    /** @test */
+    public function a_user_can_send_a_friend_request_only_once()
+    {
+        // $this->withoutExceptionHandling();
+
+        $this->actingAs($user = User::factory()->create(), 'api');
+        $anotherUser = User::factory()->create();
+
+        $this->post('/api/friend-request', [
+            'friend_id' => $anotherUser->id,
+        ])->assertStatus(200);
+
+        $this->post('/api/friend-request', [
+            'friend_id' => $anotherUser->id,
+        ])->assertStatus(200);
+
+        // Is there in fact a record of a request?
+        $friendRequests = Friend::all();
+
+        $this->assertCount(1, $friendRequests);
+
     }
 
     /** @test */

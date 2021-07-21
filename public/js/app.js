@@ -2468,16 +2468,18 @@ var getters = {
   },
   friendButtonText: function friendButtonText(state, getters, rootState) {
     // rootState: state of other vuex stores
-    // No friendship yet, so friend request can be sent
-    if (getters.friendship === null) {
-      return 'Add Friend';
-    } // Friend request hasn't been accepted yet
-    else if (getters.friendship.data.attributes.confirmed_at === null && getters.friendship.data.attributes.friend_id !== rootState.User.user.data.user_id) {
-        // Make sure that the friend requests friend_id (the receiver of the request) is not the authUsers user_id
-        return 'Pending Friend Request';
-      } else if (getters.friendship.data.attributes.confirmed_at !== null) {
-        return '';
-      }
+    if (rootState.User.user.data.user_id === state.user.data.user_id) {
+      return '';
+    } // No friendship yet, so friend request can be sent
+    else if (getters.friendship === null) {
+        return 'Add Friend';
+      } // Friend request hasn't been accepted yet
+      else if (getters.friendship.data.attributes.confirmed_at === null && getters.friendship.data.attributes.friend_id !== rootState.User.user.data.user_id) {
+          // Make sure that the friend requests friend_id (the receiver of the request) is not the authUsers user_id
+          return 'Pending Friend Request';
+        } else if (getters.friendship.data.attributes.confirmed_at !== null) {
+          return '';
+        }
 
     return 'Accept';
   }
@@ -2510,7 +2512,13 @@ var actions = {
   },
   sendFriendRequest: function sendFriendRequest(_ref3, friendId) {
     var commit = _ref3.commit,
-        state = _ref3.state;
+        getters = _ref3.getters;
+
+    // Protect against sending multiple request to same user
+    if (getters.friendButtonText !== 'Add Friend') {
+      return;
+    }
+
     axios.post('/api/friend-request', {
       'friend_id': friendId
     }).then(function (res) {

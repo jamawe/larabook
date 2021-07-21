@@ -20,6 +20,10 @@ class CreateFriendsTable extends Migration
             $table->tinyInteger('status')->nullable();
             $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
+
+            // user_id needs to be unique when paired up with friend_id
+            // So that there will exist only one friend request with this id combination
+            $table->unique(['user_id', 'friend_id']);
         });
     }
 

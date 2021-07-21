@@ -24,7 +24,7 @@ class FriendRequestController extends Controller
         // Use friends() relationship (from User model) to attach the auth user
         try {
             User::findOrFail($data['friend_id'])
-            ->friends()->attach(auth()->user());
+            ->friends()->syncWithoutDetaching(auth()->user());
         } catch (ModelNotFoundException $e) {
             throw new UserNotFoundException();
         }
