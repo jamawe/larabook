@@ -15,9 +15,14 @@ const getters = {
     if (getters.friendship === null) {
       return 'Add Friend';
     } // Friend request hasn't been accepted yet
-      else if (getters.friendship.data.attributes.confirmed_at === null) {
+      else if (getters.friendship.data.attributes.confirmed_at === null
+        && getters.friendship.data.attributes.friend_id !== rootState.User.user.data.user_id) { // Make sure that the friend requests friend_id (the receiver of the request) is not the authUsers user_id
       return 'Pending Friend Request';
+    } else if (getters.friendship.data.attributes.confirmed_at !== null) {
+      return '';
     }
+
+    return 'Accept';
   }
 };
 
@@ -29,7 +34,7 @@ const actions = {
     axios.get('/api/users/' + userId) // Get userId via route param from dispatch
       .then(res => {
         commit('setUser', res.data);
-        commit('setUserStatus', 'succes'); // If successful request change user status
+        commit('setUserStatus', 'success'); // If successful request change user status
       })
       .catch(err => {
         commit('setUserStatus', 'error'); // If failing request change user status to error
@@ -39,11 +44,31 @@ const actions = {
 
   sendFriendRequest({commit, state}, friendId) {
 
-    commit('setButtonText', 'Loading');
-
     axios.post('/api/friend-request', { 'friend_id': friendId })
       .then(res => {
         commit('setUserFriendship', res.data);
+      })
+      .catch(error => {
+      });
+
+  },
+
+  acceptFriendRequest({commit, state}, userId) {
+
+    axios.post('/api/friend-request-response', { 'user_id': userId, 'status': 1 })
+      .then(res => {
+        commit('setUserFriendship', res.data);
+      })
+      .catch(error => {
+      });
+
+  },
+
+  ignoreFriendRequest({commit, state}, userId) {
+
+    axios.delete('/api/friend-request-response/delete', { data: { 'user_id': userId } }) // Axios expects second parameter to be config file
+      .then(res => {
+        commit('setUserFriendship', null);
       })
       .catch(error => {
       });
@@ -57,14 +82,11 @@ const mutations = {
     state.user = user;
   },
   setUserFriendship(state, friendship) { // with user being the requested data
-    state.user.data.attributes.friendship = friendship;
+    state.user.data.attributes.friendship = friendship; // TODO - 37-39
   },
   setUserStatus(state, status) {
     state.userStatus = status;
   },
-  setButtonText(state, text) {
-    state.friendButtonText = text;
-  }
 };
 
 export default {

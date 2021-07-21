@@ -1847,6 +1847,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _Nav_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Nav.vue */ "./resources/js/components/Nav.vue");
 /* harmony import */ var _Sidebar_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Sidebar.vue */ "./resources/js/components/Sidebar.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -1866,6 +1873,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1880,6 +1890,9 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     this.$store.dispatch('fetchAuthUser'); // call the action in user.js
   },
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapGetters)({
+    authUser: 'authUser'
+  })),
   watch: {
     $route: function $route(to, from) {
       this.$store.dispatch('setPageTitle', to.meta.title); // call action in title.js
@@ -2218,6 +2231,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2443,9 +2468,14 @@ var getters = {
     if (getters.friendship === null) {
       return 'Add Friend';
     } // Friend request hasn't been accepted yet
-    else if (getters.friendship.data.attributes.confirmed_at === null) {
+    else if (getters.friendship.data.attributes.confirmed_at === null && getters.friendship.data.attributes.friend_id !== rootState.User.user.data.user_id) {
+        // Make sure that the friend requests friend_id (the receiver of the request) is not the authUsers user_id
         return 'Pending Friend Request';
+      } else if (getters.friendship.data.attributes.confirmed_at !== null) {
+        return '';
       }
+
+    return 'Accept';
   }
 };
 var actions = {
@@ -2457,7 +2487,7 @@ var actions = {
     axios.get('/api/users/' + userId) // Get userId via route param from dispatch
     .then(function (res) {
       commit('setUser', res.data);
-      commit('setUserStatus', 'succes'); // If successful request change user status
+      commit('setUserStatus', 'success'); // If successful request change user status
     })["catch"](function (err) {
       commit('setUserStatus', 'error'); // If failing request change user status to error
     });
@@ -2465,11 +2495,32 @@ var actions = {
   sendFriendRequest: function sendFriendRequest(_ref2, friendId) {
     var commit = _ref2.commit,
         state = _ref2.state;
-    commit('setButtonText', 'Loading');
     axios.post('/api/friend-request', {
       'friend_id': friendId
     }).then(function (res) {
       commit('setUserFriendship', res.data);
+    })["catch"](function (error) {});
+  },
+  acceptFriendRequest: function acceptFriendRequest(_ref3, userId) {
+    var commit = _ref3.commit,
+        state = _ref3.state;
+    axios.post('/api/friend-request-response', {
+      'user_id': userId,
+      'status': 1
+    }).then(function (res) {
+      commit('setUserFriendship', res.data);
+    })["catch"](function (error) {});
+  },
+  ignoreFriendRequest: function ignoreFriendRequest(_ref4, userId) {
+    var commit = _ref4.commit,
+        state = _ref4.state;
+    axios["delete"]('/api/friend-request-response/delete', {
+      data: {
+        'user_id': userId
+      }
+    }) // Axios expects second parameter to be config file
+    .then(function (res) {
+      commit('setUserFriendship', null);
     })["catch"](function (error) {});
   }
 };
@@ -2480,13 +2531,10 @@ var mutations = {
   },
   setUserFriendship: function setUserFriendship(state, friendship) {
     // with user being the requested data
-    state.user.data.attributes.friendship = friendship;
+    state.user.data.attributes.friendship = friendship; // TODO - 37-39
   },
   setUserStatus: function setUserStatus(state, status) {
     state.userStatus = status;
-  },
-  setButtonText: function setButtonText(state, text) {
-    state.friendButtonText = text;
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -38488,30 +38536,32 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "flex flex-col flex-1 h-screen overflow-y-hidden" },
-    [
-      _c("Nav"),
-      _vm._v(" "),
-      _c(
+  return _vm.authUser
+    ? _c(
         "div",
-        { staticClass: "flex flex-1 overflow-y-hidden" },
+        { staticClass: "flex flex-col flex-1 h-screen overflow-y-hidden" },
         [
-          _c("Sidebar"),
+          _c("Nav"),
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "overflow-x-hidden w-2/3" },
-            [_c("router-view", { key: _vm.$route.fullPath })],
+            { staticClass: "flex flex-1 overflow-y-hidden" },
+            [
+              _c("Sidebar"),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "overflow-x-hidden w-2/3" },
+                [_c("router-view", { key: _vm.$route.fullPath })],
+                1
+              )
+            ],
             1
           )
         ],
         1
       )
-    ],
-    1
-  )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39110,7 +39160,7 @@ var render = function() {
               "absolute flex items-center bottom-0 right-0 mb-4 mr-12 z-20"
           },
           [
-            _vm.friendButtonText
+            _vm.friendButtonText && _vm.friendButtonText !== "Accept"
               ? _c(
                   "button",
                   {
@@ -39126,11 +39176,45 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n          " +
-                        _vm._s(_vm.friendButtonText) +
-                        "\n        "
+                      "\n          " + _vm._s(_vm.friendButtonText) + "\n      "
                     )
                   ]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.friendButtonText && _vm.friendButtonText === "Accept"
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "mr-2 py-1 px-3 bg-blue-500 rounded",
+                    on: {
+                      click: function($event) {
+                        return _vm.$store.dispatch(
+                          "acceptFriendRequest",
+                          _vm.$route.params.userId
+                        )
+                      }
+                    }
+                  },
+                  [_vm._v("\n          Accept\n      ")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.friendButtonText && _vm.friendButtonText === "Accept"
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "py-1 px-3 bg-gray-200 rounded",
+                    on: {
+                      click: function($event) {
+                        return _vm.$store.dispatch(
+                          "ignoreFriendRequest",
+                          _vm.$route.params.userId
+                        )
+                      }
+                    }
+                  },
+                  [_vm._v("\n          Ignore\n      ")]
                 )
               : _vm._e()
           ]

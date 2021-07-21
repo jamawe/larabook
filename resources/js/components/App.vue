@@ -1,12 +1,14 @@
 <template>
 
-  <div class="flex flex-col flex-1 h-screen overflow-y-hidden">
+  <div
+    v-if="authUser"
+    class="flex flex-col flex-1 h-screen overflow-y-hidden">
     
     <Nav />
 
     <div class="flex flex-1 overflow-y-hidden">
 
-        <Sidebar />
+      <Sidebar />
 
       <div class="overflow-x-hidden w-2/3">
         <router-view :key="$route.fullPath"></router-view>
@@ -19,7 +21,9 @@
 
 <script>
   import Nav from './Nav.vue';
-  import Sidebar     from './Sidebar.vue';
+  import Sidebar from './Sidebar.vue';
+
+  import { mapGetters } from 'vuex';
 
   export default {
     name: 'App',
@@ -36,6 +40,12 @@
 
     mounted() {
       this.$store.dispatch('fetchAuthUser'); // call the action in user.js
+    },
+
+    computed: {
+      ...mapGetters({
+        authUser: 'authUser',
+      })
     },
 
     watch: {
