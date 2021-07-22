@@ -28,12 +28,7 @@ class PostToTimelineTest extends TestCase
 
         // Properly formatted request
         $response = $this->post('/api/posts', [
-            'data' => [
-                'type' => 'posts',
-                'attributes' => [
                     'body' => 'Testing Body',
-                ]
-            ]
         ]);
 
         // If post was successfully created it must exist in database

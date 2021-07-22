@@ -3,7 +3,7 @@
 
     <NewPost />
 
-    <p v-if="loading">Loading posts...</p>
+    <p v-if="newsStatus.newsPostsStatus === 'loading'">Loading posts...</p>
 
     <Post
       v-else
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
   import NewPost from '../components/NewPost.vue';
   import Post from '../components/Post.vue';
 
@@ -28,23 +29,15 @@
       Post
     },
 
-    data() {
-      return {
-        posts: null,
-        loading: true
-      }
+    mounted() {
+      this.$store.dispatch('fetchNewsPosts', )
     },
 
-    mounted() {
-      axios.get('/api/posts')
-        .then(res => {
-          this.posts = res.data;
-          this.loading = false;
-        })
-        .catch(err => {
-          console.log('Unable to fetch posts.');
-          this.loading = false;
-        });
+    computed: {
+      ...mapGetters({
+        posts: 'newsPosts',
+        newsStatus: 'newsStatus'
+      })
     }
   }
 </script>

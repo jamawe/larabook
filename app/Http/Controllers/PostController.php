@@ -31,11 +31,11 @@ class PostController extends Controller
     public function store() {
 
         $data = request()->validate([
-            'data.attributes.body' => '',
+            'body' => '',
         ]);
 
         // Bc the relationship not yet exists Post::create not possible, but request()->user()->posts()->create($data) works
-        $post = request()->user()->posts()->create($data['data']['attributes']);
+        $post = request()->user()->posts()->create($data);
         
         // Will return 201 directly
         return new PostResource($post);
