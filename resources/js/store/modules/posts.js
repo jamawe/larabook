@@ -49,6 +49,17 @@ const actions = {
       .catch(err => {
       });
 
+  },
+
+  likePost({commit, state}, data) {
+    axios.post('/api/posts/'+data.postId+'/like')
+    .then(res => {
+      commit('pushLikes', { likes: res.data, postKey: data.postKey });
+      // commit('setPostsStatus', 'success');
+    })
+    .catch(err => {
+    });
+
   }
 };
 
@@ -67,6 +78,11 @@ const mutations = {
 
   pushPost(state, post) {
     state.newsPosts.data.unshift(post); // Adding the new post to the top
+  },
+
+  pushLikes(state, data) {
+    // Replace the old likes object of a post (located with postKey) with the new object of likes data.likes (which is the response from the server)
+    state.newsPosts.data[data.postKey].data.attributes.likes = data.likes;
   }
 };
 
