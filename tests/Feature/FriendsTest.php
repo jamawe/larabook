@@ -255,9 +255,6 @@ class FriendsTest extends TestCase
 
         $responseString = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('friend_id', $responseString['errors']['meta']);
-        // dd($responseString);
-
-        // dd($response->getContent());
     }
 
     /** @test */
