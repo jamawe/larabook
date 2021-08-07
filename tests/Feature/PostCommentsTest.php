@@ -108,7 +108,7 @@ class PostCommentsTest extends TestCase
                         'data' => [
                             'type' => 'posts',
                             'attributes' => [
-                                'comment' => [
+                                'comments' => [
                                     'data' => [
                                         [
                                             'data' => [
