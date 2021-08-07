@@ -60,6 +60,16 @@ const actions = {
     .catch(err => {
     });
 
+  },
+
+  commentPost({commit, state}, data) {
+    axios.post('/api/posts/'+data.postId+'/comment', { body: data.body })
+    .then(res => {
+      commit('pushComments', { comments: res.data, postKey: data.postKey });
+    })
+    .catch(err => {
+    });
+
   }
 };
 
@@ -83,6 +93,10 @@ const mutations = {
   pushLikes(state, data) {
     // Replace the old likes object of a post (located with postKey) with the new object of likes data.likes (which is the response from the server)
     state.newsPosts.data[data.postKey].data.attributes.likes = data.likes;
+  },
+
+  pushComments(state, data) {
+    state.newsPosts.data[data.postKey].data.attributes.comments = data.comments;
   }
 };
 
