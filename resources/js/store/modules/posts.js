@@ -1,17 +1,17 @@
 const state = {
-  newsPosts: null,
-  newsPostsStatus: null,
+  posts: null,
+  postsStatus: null,
   postMessage: '',
 };
 
 const getters = {
-  newsPosts: state => {
-    return state.newsPosts;
+  posts: state => {
+    return state.posts;
   },
 
   newsStatus: state => {
     return {
-      newsPostsStatus: state.newsPostsStatus,
+      postsStatus: state.postsStatus,
     }
   },
 
@@ -33,6 +33,21 @@ const actions = {
       .catch(err => {
         commit('setPostsStatus', 'error');
       });
+
+  },
+
+  fetchUserPosts({commit, dispatch}, userId) {
+
+    commit('setPostsStatus', 'loading'); // Set user status to loading at beginning
+
+    axios.get('/api/users/' + userId + '/posts')
+    .then(res => {
+      commit('setPosts', res.data);
+      commit('setPostsStatus', 'success');
+    })
+    .catch(err => {
+      commit('setPostsStatus', 'error');
+    });
 
   },
 
@@ -75,11 +90,11 @@ const actions = {
 
 const mutations = {
   setPosts(state, posts) {
-    state.newsPosts = posts;
+    state.posts = posts;
   },
 
   setPostsStatus(state, status) {
-    state.newsPostsStatus = status;
+    state.postsStatus = status;
   },
 
   updateMessage(state, message) {
@@ -87,16 +102,16 @@ const mutations = {
   },
 
   pushPost(state, post) {
-    state.newsPosts.data.unshift(post); // Adding the new post to the top
+    state.posts.data.unshift(post); // Adding the new post to the top
   },
 
   pushLikes(state, data) {
     // Replace the old likes object of a post (located with postKey) with the new object of likes data.likes (which is the response from the server)
-    state.newsPosts.data[data.postKey].data.attributes.likes = data.likes;
+    state.posts.data[data.postKey].data.attributes.likes = data.likes;
   },
 
   pushComments(state, data) {
-    state.newsPosts.data[data.postKey].data.attributes.comments = data.comments;
+    state.posts.data[data.postKey].data.attributes.comments = data.comments;
   }
 };
 

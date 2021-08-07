@@ -2244,7 +2244,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.$store.dispatch('fetchNewsPosts');
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_2__.mapGetters)({
-    posts: 'newsPosts',
+    posts: 'posts',
     newsStatus: 'newsStatus'
   }))
 });
@@ -2525,17 +2525,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 var state = {
-  newsPosts: null,
-  newsPostsStatus: null,
+  posts: null,
+  postsStatus: null,
   postMessage: ''
 };
 var getters = {
-  newsPosts: function newsPosts(state) {
-    return state.newsPosts;
+  posts: function posts(state) {
+    return state.posts;
   },
   newsStatus: function newsStatus(state) {
     return {
-      newsPostsStatus: state.newsPostsStatus
+      postsStatus: state.postsStatus
     };
   },
   postMessage: function postMessage(state) {
@@ -2554,9 +2554,21 @@ var actions = {
       commit('setPostsStatus', 'error');
     });
   },
-  postMessage: function postMessage(_ref2) {
+  fetchUserPosts: function fetchUserPosts(_ref2, userId) {
     var commit = _ref2.commit,
-        state = _ref2.state;
+        dispatch = _ref2.dispatch;
+    commit('setPostsStatus', 'loading'); // Set user status to loading at beginning
+
+    axios.get('/api/users/' + userId + '/posts').then(function (res) {
+      commit('setPosts', res.data);
+      commit('setPostsStatus', 'success');
+    })["catch"](function (err) {
+      commit('setPostsStatus', 'error');
+    });
+  },
+  postMessage: function postMessage(_ref3) {
+    var commit = _ref3.commit,
+        state = _ref3.state;
     commit('setPostsStatus', 'loading');
     axios.post('/api/posts', {
       body: state.postMessage
@@ -2566,9 +2578,9 @@ var actions = {
       commit('updateMessage', '');
     })["catch"](function (err) {});
   },
-  likePost: function likePost(_ref3, data) {
-    var commit = _ref3.commit,
-        state = _ref3.state;
+  likePost: function likePost(_ref4, data) {
+    var commit = _ref4.commit,
+        state = _ref4.state;
     axios.post('/api/posts/' + data.postId + '/like').then(function (res) {
       commit('pushLikes', {
         likes: res.data,
@@ -2576,9 +2588,9 @@ var actions = {
       }); // commit('setPostsStatus', 'success');
     })["catch"](function (err) {});
   },
-  commentPost: function commentPost(_ref4, data) {
-    var commit = _ref4.commit,
-        state = _ref4.state;
+  commentPost: function commentPost(_ref5, data) {
+    var commit = _ref5.commit,
+        state = _ref5.state;
     axios.post('/api/posts/' + data.postId + '/comment', {
       body: data.body
     }).then(function (res) {
@@ -2591,23 +2603,23 @@ var actions = {
 };
 var mutations = {
   setPosts: function setPosts(state, posts) {
-    state.newsPosts = posts;
+    state.posts = posts;
   },
   setPostsStatus: function setPostsStatus(state, status) {
-    state.newsPostsStatus = status;
+    state.postsStatus = status;
   },
   updateMessage: function updateMessage(state, message) {
     state.postMessage = message;
   },
   pushPost: function pushPost(state, post) {
-    state.newsPosts.data.unshift(post); // Adding the new post to the top
+    state.posts.data.unshift(post); // Adding the new post to the top
   },
   pushLikes: function pushLikes(state, data) {
     // Replace the old likes object of a post (located with postKey) with the new object of likes data.likes (which is the response from the server)
-    state.newsPosts.data[data.postKey].data.attributes.likes = data.likes;
+    state.posts.data[data.postKey].data.attributes.likes = data.likes;
   },
   pushComments: function pushComments(state, data) {
-    state.newsPosts.data[data.postKey].data.attributes.comments = data.comments;
+    state.posts.data[data.postKey].data.attributes.comments = data.comments;
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2632,16 +2644,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var state = {
   user: null,
-  userStatus: null,
-  posts: null,
-  postsStatus: null
+  userStatus: null
 };
 var getters = {
   user: function user(state) {
     return state.user;
-  },
-  posts: function posts(state) {
-    return state.posts;
   },
   status: function status(state) {
     return {
@@ -2684,21 +2691,9 @@ var actions = {
       commit('setUserStatus', 'error'); // If failing request change user status to error
     });
   },
-  fetchUserPosts: function fetchUserPosts(_ref2, userId) {
+  sendFriendRequest: function sendFriendRequest(_ref2, friendId) {
     var commit = _ref2.commit,
-        dispatch = _ref2.dispatch;
-    commit('setPostsStatus', 'loading'); // Set user status to loading at beginning
-
-    axios.get('/api/users/' + userId + '/posts').then(function (res) {
-      commit('setPosts', res.data);
-      commit('setPostsStatus', 'success');
-    })["catch"](function (err) {
-      commit('setPostsStatus', 'error');
-    });
-  },
-  sendFriendRequest: function sendFriendRequest(_ref3, friendId) {
-    var commit = _ref3.commit,
-        getters = _ref3.getters;
+        getters = _ref2.getters;
 
     // Protect against sending multiple request to same user
     if (getters.friendButtonText !== 'Add Friend') {
@@ -2711,9 +2706,9 @@ var actions = {
       commit('setUserFriendship', res.data);
     })["catch"](function (error) {});
   },
-  acceptFriendRequest: function acceptFriendRequest(_ref4, userId) {
-    var commit = _ref4.commit,
-        state = _ref4.state;
+  acceptFriendRequest: function acceptFriendRequest(_ref3, userId) {
+    var commit = _ref3.commit,
+        state = _ref3.state;
     axios.post('/api/friend-request-response', {
       'user_id': userId,
       'status': 1
@@ -2721,9 +2716,9 @@ var actions = {
       commit('setUserFriendship', res.data);
     })["catch"](function (error) {});
   },
-  ignoreFriendRequest: function ignoreFriendRequest(_ref5, userId) {
-    var commit = _ref5.commit,
-        state = _ref5.state;
+  ignoreFriendRequest: function ignoreFriendRequest(_ref4, userId) {
+    var commit = _ref4.commit,
+        state = _ref4.state;
     axios["delete"]('/api/friend-request-response/delete', {
       data: {
         'user_id': userId
@@ -2739,19 +2734,12 @@ var mutations = {
     // with user being the requested data
     state.user = user;
   },
-  setPosts: function setPosts(state, posts) {
-    // with user being the requested data
-    state.posts = posts;
-  },
   setUserFriendship: function setUserFriendship(state, friendship) {
     // with user being the requested data
     state.user.data.attributes.friendship = friendship; // TODO - 37-39
   },
   setUserStatus: function setUserStatus(state, status) {
     state.userStatus = status;
-  },
-  setPostsStatus: function setPostsStatus(state, status) {
-    state.postsStatus = status;
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -39771,11 +39759,8 @@ var render = function() {
             ? _c("div", [_vm._v("Loading posts...")])
             : _vm.posts.length < 1
             ? _c("div", [_vm._v("This user has no posts yet. Get started...")])
-            : _vm._l(_vm.posts.data, function(post) {
-                return _c("Post", {
-                  key: post.data.post_id,
-                  attrs: { post: post }
-                })
+            : _vm._l(_vm.posts.data, function(post, postKey) {
+                return _c("Post", { key: postKey, attrs: { post: post } })
               })
         ],
         2
