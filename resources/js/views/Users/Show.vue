@@ -4,7 +4,12 @@
     class="flex flex-col items-center">
     <div class="relative mb-8">
       <div class="w-100 h-64 overflow-hidden z-10">
-        <img src="https://images.unsplash.com/photo-1624455375091-9746420d4809?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="User background image" class="object-cover w-full">
+        
+        <UploadableImage
+          image-width="1500"
+          image-height="300"
+          location="cover" />
+
       </div>
 
       <div class="absolute flex items-center bottom-0 left-0 -mb-8 ml-12 z-20">
@@ -55,6 +60,7 @@
 
 <script>
   import Post from '../../components/Post.vue';
+  import UploadableImage from '../../components/UploadableImage.vue';
   import { mapGetters } from 'vuex';
 
   export default {
@@ -62,6 +68,7 @@
 
     components: {
       Post,
+      UploadableImage,
     },
 
     mounted() {
