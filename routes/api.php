@@ -8,6 +8,7 @@ use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\FriendRequestResponseController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\PostCommentController;
+use App\Http\Controllers\UserImageController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,7 @@ Route::middleware('auth:api')->group(function () {
         '/users/{user}/posts' => UserPostController::class,
         '/friend-request' => FriendRequestController::class,
         '/friend-request-response' => FriendRequestResponseController::class,
+        '/user-images' => UserImageController::class,
 
     ]);
 
