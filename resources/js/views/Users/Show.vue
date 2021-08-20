@@ -8,13 +8,25 @@
         <UploadableImage
           image-width="1500"
           image-height="300"
-          location="cover" />
+          location="cover"
+          alt="user background image"
+          classes="object-cover w-full"
+          :user-image="user.data.attributes.cover_image" />
 
       </div>
 
       <div class="absolute flex items-center bottom-0 left-0 -mb-8 ml-12 z-20">
         <div class="w-32">
-          <img src="https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_1280.jpg" alt="User profile image" class="w-32 h-32 object-cover border-4 border-gray-200 rounded-full shadow-lg">
+
+          <UploadableImage
+          image-width="1500"
+          image-height="300"
+          location="profile"
+          alt="user profile image"
+          classes="w-32 h-32 object-cover border-4 border-gray-200 rounded-full shadow-lg"
+          :user-image="user.data.attributes.profile_image" />
+
+          
         </div>
 
         <p class="text-2xl text-gray-100 ml-4">{{ user.data.attributes.name }}</p>

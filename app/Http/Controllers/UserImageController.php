@@ -26,6 +26,5 @@ class UserImageController extends Controller
         ]);
 
         return new UserImageResource($userImage);
-        // return response([], 201);
     }
 }

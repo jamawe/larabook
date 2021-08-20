@@ -1,9 +1,10 @@
 <template>
   <div>
     <img 
-      src="https://images.unsplash.com/photo-1624455375091-9746420d4809?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80" alt="User background image" 
+      :src="imageObject.data.attributes.path"
+      :alt="alt" 
       ref="userImage"
-      class="object-cover w-full">
+      :class="classes">
   </div>
 </template>
 
@@ -14,14 +15,18 @@ export default {
   name: 'UploadableImage',
 
   props: [
+    'userImage',
     'imageWidth',
     'imageHeight',
     'location',
+    'classes',
+    'alt',
   ],
 
   data() {
     return {
       dropzone: null,
+      uploadedImage: null,
     }
   },
 
@@ -44,9 +49,13 @@ export default {
           'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
         },
         success: (e, res) => {
-          alert('Uploaded!');
+          this.uploadedImage = res;
         }
       };
+    },
+
+    imageObject() {
+      return this.uploadedImage || this.userImage;
     }
   }
 }
