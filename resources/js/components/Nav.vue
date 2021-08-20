@@ -29,7 +29,7 @@
       </router-link>
 
       <router-link :to="'/users/' + authUser.data.user_id" class="px-6 border-b-2 border-white h-full flex items-center">
-        <img src="https://cdn.pixabay.com/photo/2014/07/09/10/04/man-388104_1280.jpg" alt="Profile image for user" class="w-8 h-8 object-cover rounded-full">
+        <img :src="authUser.data.attributes.profile_image.data.attributes.path" alt="Profile image for user" class="w-8 h-8 object-cover rounded-full">
       </router-link>
 
       <router-link to="/" class="px-6 border-b-2 border-white h-full flex items-center">
