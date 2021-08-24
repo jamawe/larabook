@@ -17,7 +17,8 @@
       </div>
     </div>
 
-    <div class="w-full" v-if="post.data.attributes.image">
+    <!-- Workaround because of storage url -- todo: how to get relative url with storage (not full!) -->
+    <div v-if="post.data.attributes.image.length > 29" class="w-full">
       <img :src="post.data.attributes.image" alt="Post image" class="w-full">
     </div>
 
